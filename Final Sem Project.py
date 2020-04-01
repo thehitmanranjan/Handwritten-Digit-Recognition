@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[47]:
+# In[109]:
 
 
 import numpy as np
@@ -27,7 +27,7 @@ from keras.datasets.mnist import load_data
 
 # # 1. Load the Dataset
 
-# In[48]:
+# In[110]:
 
 
 data=load_data() #Returns a tuple
@@ -38,7 +38,7 @@ np.shape(data)
 # 1. First row is the training data and the second row is the testing data
 # 2. First column consists of images and the second column is the labels of the images.
 
-# In[49]:
+# In[111]:
 
 
 #Unpack the data.
@@ -47,7 +47,7 @@ np.shape(data)
 (train_images,train_labels),(test_images,test_labels)=data
 
 
-# In[50]:
+# In[112]:
 
 
 #Print the first training tuple image
@@ -56,14 +56,14 @@ train_images[0]
 
 # The above data is represented in the for of 28*28 pixel. There are 28 rows, each comprising of 28 values. The images are stored as numpy arrays
 
-# In[51]:
+# In[113]:
 
 
 #Print the first training label
 train_labels[0]
 
 
-# In[52]:
+# In[114]:
 
 
 #Put all the labels in a set so as to find all the unqiue labels.
@@ -74,7 +74,7 @@ set(train_labels) #or np.unique(train_labels)
 
 # To show some images of the dataset with their labels.
 
-# In[53]:
+# In[115]:
 
 
 #plt.figure(figsize=(width,height)) is used to set the width and height of the image.  
@@ -94,21 +94,21 @@ for i in range(5):
 
 # Scaling the data. (Convert all the pixel values which are in the range (0-225) to (0-1). This is to reduce the complexity of data and faster training process)
 
-# In[54]:
+# In[116]:
 
 
 #Before scaling,the pixels of first training image are as follows:
 np.unique(train_images[0])
 
 
-# In[55]:
+# In[117]:
 
 
 train_images=train_images/255.0
 test_images=test_images/255.0
 
 
-# In[56]:
+# In[118]:
 
 
 #After scaling, the pixels of first training image are as follows:
@@ -125,7 +125,7 @@ np.unique(train_images[0])
 # Building block of a neural network  in Keras Library is the LAYER. It is a sequential object.
 # Each layer consists of several perceptons.
 
-# In[57]:
+# In[119]:
 
 
 model=keras.Sequential([
@@ -140,7 +140,7 @@ model=keras.Sequential([
 
 # EXAMINE THE STRUCTURE OF WEIGHTS OF THE HIDDEN LAYER
 
-# In[58]:
+# In[120]:
 
 
 #To get the hidden layer from the model
@@ -159,7 +159,7 @@ print('Shape of biases: ',np.shape(weights[1]))
 
 # EXAMINE THE STRUCTURE OF WEIGHTS OF THE OUTPUT LAYER
 
-# In[59]:
+# In[121]:
 
 
 #To get the output layer from the model
@@ -186,7 +186,7 @@ print('Shape of biases: ',np.shape(weights[1]))
 # 3. Metrics:
 #     Used to montior the training and testings steps. The following example uses acuracy, the fraction of images that are correcylt classified.
 
-# In[60]:
+# In[122]:
 
 
 #lr= Learning rate
@@ -201,7 +201,7 @@ model.compile(optimizer=sgd,loss='sparse_categorical_crossentropy',metrics=['acc
 
 # 1. Feed the training data to the model (train_images and train_labels)
 
-# In[61]:
+# In[123]:
 
 
 #epochs=no. of timesto itearate over the entire dataset
@@ -216,7 +216,7 @@ history=model.fit(train_images,train_labels,epochs=10,batch_size=100,validation_
 
 # The fit() method on a Keras Model returns a History object. The History.history attribute is a dictionary recording training loss values and metrics values at successive epochs, as well as validation loss values and validation metrics values (if applicable)
 
-# In[62]:
+# In[124]:
 
 
 #to store validation loss values
@@ -247,7 +247,7 @@ plt.ylabel('Loss')
 
 # # Evaluate the model by computing the accuracy over testing data
 
-# In[63]:
+# In[125]:
 
 
 #Returns the loss value & metrics values for the model in test mode.
@@ -258,7 +258,7 @@ print('Test  Loss', test_loss)
 
 # # Make predictions
 
-# In[64]:
+# In[126]:
 
 
 image = cv2.imread('MNIST_IMAGE.png')
@@ -274,68 +274,62 @@ predictions = model.predict(np.expand_dims(data, 0))
 
 # Confidence levels show how confident is the model to predict ambiguous images.
 
-# In[65]:
+# In[154]:
 
 
 def plot_confidence(images,labels,predictions):
     #15 is the width and 30 is the height of the figure
-    plt.figure(figsize=(10,5))
+    plt.figure(figsize=(15,30))
     
     #to set spacing between the plots. hspace=spacing between rows. wspace=spacing between columns.
     plt.subplots_adjust(top=0.99,bottom=0.01,hspace=1.5,wspace=0)
     
     #Location of a particular plot.
-    plot_index=0;
-    
-    for i in range(len(images)):
-        plot_index+=1
+    plot_index=1;
+    #plt.subplot(no. of rows,no. of columns, plot no.)
+    #First columns=images. Second column=bar plot of confidence level
+    plt.subplot(1,2,plot_index)
+    #Display the image in grayscale
+    plt.imshow(images,cmap=plt.cm.binary)
+    #Correct label
+    correct_label=str(labels)
+    #Predicted label is the argument in predictions with highest confidence
+    #argmax() Returns the indices of the maximum values along an axis.
+    #The value of the prediction will be max on the predicetd label.
+    #The predicted label and numpy array's index are same for this problem. 
+    predicted_label=str(np.argmax(predictions))
         
-        #plt.subplot(no. of rows,no. of columns, plot no.)
-        #First columns=images. Second column=bar plot of confidence level
-        plt.subplot(len(images),2,plot_index)
-        
-        #Display the image in grayscale
-        plt.imshow(images[i],cmap=plt.cm.binary)
-        
-        #Correct label
-        correct_label=str(labels[i])
-        
-        #Predicted label is the argument in predictions with highest confidence
-        #argmax() Returns the indices of the maximum values along an axis.
-        #The value of the prediction will be max on the predicetd label.
-        #The predicted label and numpy array's index are same for this problem. 
-        predicted_label=str(np.argmax(predictions[i]))
-        
-        title='Corrected label: '+correct_label+'\n'+'Predicted Label: '+predicted_label
-        if predicted_label!=correct_label:
-            plt.title(title,backgroundcolor='r',color='w')
-        else:
-            plt.title(title,backgroundcolor='g',color='w')
+    title='Correct label: '+correct_label+'\n'+'Predicted Label: '+predicted_label
+    if predicted_label!=correct_label:
+        plt.title(title,backgroundcolor='r',color='w')
+    else:
+        plt.title(title,backgroundcolor='g',color='w')
             
-        #To remove the xticks and yticks
-        plt.xticks([])
-        plt.yticks([])
+    #To remove the xticks and yticks
+    plt.xticks([])
+    plt.yticks([])
         
-        plot_index+=1
-        plt.subplot(len(images),2,plot_index)
+    plt.subplot(1,2,plot_index)
         
-        #Display the bar graph with x axis as digits 0-9 and y axis as the predictions of those digits
-        plt.bar(range(10),predictions[i])
-        plt.xticks(range(10))
-        plt.ylim(0,1) #as the confidence level lies in that range
+    #Display the bar graph with x axis as digits 0-9 and y axis as the predictions of those digits
+    plt.bar(range(10),predictions)
+    plt.xticks(range(10))
+    plt.ylim(0,1) #as the confidence level lies in that range
 
 
-# In[66]:
+# In[155]:
 
 
 #Select first 10 images and their label from the testing datasets.
 #Also select the first 10 predictions.
 
 images=data
-labels=asarray(5)
+labels=5
 test_predictions=predictions
-plot_confidence(images,labels,test_predictions)
+plot_confidence(images,labels,test_predictions[0])
 
+
+# 
 
 # In[ ]:
 
