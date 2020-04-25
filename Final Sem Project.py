@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[366]:
+# In[4]:
 
 
 import numpy as np
@@ -29,7 +29,7 @@ from keras.preprocessing.image import img_to_array
 
 # # 1. Load the Dataset
 
-# In[219]:
+# In[5]:
 
 
 data=load_data() #Returns a tuple
@@ -40,7 +40,7 @@ np.shape(data)
 # 1. First row is the training data and the second row is the testing data
 # 2. First column consists of images and the second column is the labels of the images.
 
-# In[220]:
+# In[6]:
 
 
 #Unpack the data.
@@ -49,7 +49,7 @@ np.shape(data)
 (train_images,train_labels),(test_images,test_labels)=data
 
 
-# In[221]:
+# In[7]:
 
 
 #Print the first training tuple image
@@ -58,14 +58,14 @@ train_images[0]
 
 # The above data is represented in the for of 28*28 pixel. There are 28 rows, each comprising of 28 values. The images are stored as numpy arrays
 
-# In[222]:
+# In[8]:
 
 
 #Print the first training label
 train_labels[0]
 
 
-# In[223]:
+# In[9]:
 
 
 #Put all the labels in a set so as to find all the unqiue labels.
@@ -76,7 +76,7 @@ set(train_labels) #or np.unique(train_labels)
 
 # To show some images of the dataset with their labels.
 
-# In[259]:
+# In[10]:
 
 
 #plt.figure(figsize=(width,height)) is used to set the width and height of the image.  
@@ -96,21 +96,21 @@ for i in range(5):
 
 # Scaling the data. (Convert all the pixel values which are in the range (0-225) to (0-1). This is to reduce the complexity of data and faster training process)
 
-# In[225]:
+# In[11]:
 
 
 #Before scaling,the pixels of first training image are as follows:
 np.unique(train_images[0])
 
 
-# In[226]:
+# In[12]:
 
 
 train_images=train_images/255.0
 test_images=test_images/255.0
 
 
-# In[227]:
+# In[13]:
 
 
 #After scaling, the pixels of first training image are as follows:
@@ -127,7 +127,7 @@ np.unique(train_images[0])
 # Building block of a neural network  in Keras Library is the LAYER. It is a sequential object.
 # Each layer consists of several perceptons.
 
-# In[228]:
+# In[14]:
 
 
 model=keras.Sequential([
@@ -142,7 +142,7 @@ model=keras.Sequential([
 
 # EXAMINE THE STRUCTURE OF WEIGHTS OF THE HIDDEN LAYER
 
-# In[229]:
+# In[15]:
 
 
 #To get the hidden layer from the model
@@ -161,7 +161,7 @@ print('Shape of biases: ',np.shape(weights[1]))
 
 # EXAMINE THE STRUCTURE OF WEIGHTS OF THE OUTPUT LAYER
 
-# In[230]:
+# In[16]:
 
 
 #To get the output layer from the model
@@ -188,7 +188,7 @@ print('Shape of biases: ',np.shape(weights[1]))
 # 3. Metrics:
 #     Used to montior the training and testings steps. The following example uses acuracy, the fraction of images that are correcylt classified.
 
-# In[231]:
+# In[17]:
 
 
 #lr= Learning rate
@@ -203,7 +203,7 @@ model.compile(optimizer=sgd,loss='sparse_categorical_crossentropy',metrics=['acc
 
 # 1. Feed the training data to the model (train_images and train_labels)
 
-# In[232]:
+# In[18]:
 
 
 #epochs=no. of timesto itearate over the entire dataset
@@ -218,7 +218,7 @@ history=model.fit(train_images,train_labels,epochs=10,batch_size=100,validation_
 
 # The fit() method on a Keras Model returns a History object. The History.history attribute is a dictionary recording training loss values and metrics values at successive epochs, as well as validation loss values and validation metrics values (if applicable)
 
-# In[233]:
+# In[19]:
 
 
 #to store validation loss values
@@ -249,7 +249,7 @@ plt.ylabel('Loss')
 
 # # Evaluate the model by computing the accuracy over testing data
 
-# In[234]:
+# In[20]:
 
 
 #Returns the loss value & metrics values for the model in test mode.
@@ -258,37 +258,42 @@ print('Test Accuracy', test_acc)
 print('Test  Loss', test_loss)
 
 
-# In[390]:
-
-
-im=test_images[0]
-gr_im= Image.fromarray(im).convert('RGB')
-gr_im.save('koala.png')
-plt.imshow(im,cmap=plt.cm.binary) 
-
-
 # # Make predictions
 
-# In[383]:
+# In[ ]:
 
 
-image = cv2.imread("MNIST_IMAGE2.png")
-image = cv2.resize(image,(28,28))
+image = cv2.imread("9w.png")
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-data = asarray(gray)
+gray = cv2.resize(255-gray,(28,28))
+
+blur = cv2.GaussianBlur(gray,(5,5),0)
+ret, thresh1 = cv2.threshold(blur, 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU) 
+
+cv2.imwrite("testing.png", thresh1)
+
+data = asarray(thresh1)
 data=data/255.0
 predictions = model.predict(np.expand_dims(data, 0))
 
 
-# data = np.array(Image.open('MNIST_IMAGE2.png').resize((28,28)).convert('L'))
+# #Without thresholding or gaussian blurring
+# image = cv2.imread("original.png")
+# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# gray = cv2.resize(gray,(28,28))
+# 
+# cv2.imwrite("testing.png", gray)
+# 
+# data = asarray(gray)
 # data=data/255.0
 # predictions = model.predict(np.expand_dims(data, 0))
+# #predictions=model.predict(np.expand_dims(test_images[0],0))
 
 # # Define a function to display image along with confidence levels
 
 # Confidence levels show how confident is the model to predict ambiguous images.
 
-# In[384]:
+# In[365]:
 
 
 def plot_confidence(images,labels,predictions):
@@ -331,22 +336,13 @@ def plot_confidence(images,labels,predictions):
     plt.ylim(0,1) #as the confidence level lies in that range
 
 
-# In[385]:
+# In[366]:
 
 
 images=data
-labels=7
+labels=9
 test_predictions=predictions
 plot_confidence(images,labels,test_predictions[0])
-
-
-# In[392]:
-
-
-print("PREDICTED NUMBER IS")
-print()
-print()
-print("7210414")
 
 
 # In[ ]:
