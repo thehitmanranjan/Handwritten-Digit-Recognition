@@ -22,9 +22,18 @@ ctrs, hier = cv2.findContours(im_th.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_
 
 # Get rectangles contains each contour
 rects = [cv2.boundingRect(ctr) for ctr in ctrs]
-
-# For each rectangular region, calculate HOG features and predict
-# the digit using Linear SVM.
+rects.sort()
+print(rects)
+count=0
+for i in rects:
+    count=count+1
+    x=i[0]
+    y=i[1]
+    width=i[2]
+    height=i[3]
+    print(x,y,width,height)
+    roi = im[y:y+height, x:x+width]
+    cv2.imwrite(r"C:\Users\thehitmanranjan\Desktop\0utput\roi"+str(count)+".png", roi)
 for rect in rects:
     # Draw the rectangles
     cv2.rectangle(im, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3) 
@@ -36,10 +45,6 @@ for rect in rects:
     # Resize the image
     roi = cv2.resize(roi, (28, 28), interpolation=cv2.INTER_AREA)
     roi = cv2.dilate(roi, (3, 3))
-    # Calculate the HOG features
-    roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), visualise=False)
-    #nbr = clf.predict(np.array([roi_hog_fd], 'float64'))
-    #cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]),cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
-
+    
 cv2.imshow("Resulting Image with Rectangular ROIs", im)
 cv2.waitKey()

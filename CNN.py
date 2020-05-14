@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[34]:
+# In[1]:
 
 
 import numpy as np 
@@ -17,13 +17,13 @@ from numpy import asarray
 import matplotlib.pyplot as plt
 
 
-# In[12]:
+# In[2]:
 
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data() 
 
 
-# In[13]:
+# In[3]:
 
 
 img_rows, img_cols=28, 28
@@ -44,14 +44,14 @@ x_train /= 255
 x_test /= 255
 
 
-# In[14]:
+# In[4]:
 
 
 y_train = keras.utils.to_categorical(y_train) 
 y_test = keras.utils.to_categorical(y_test) 
 
 
-# In[15]:
+# In[5]:
 
 
 inpx = Input(shape=inpx) 
@@ -64,7 +64,7 @@ layer6 = Dense(250, activation='sigmoid')(layer5)
 layer7 = Dense(10, activation='sigmoid')(layer6) 
 
 
-# In[16]:
+# In[6]:
 
 
 model = Model([inpx], layer7) 
@@ -72,10 +72,11 @@ model.compile(optimizer=keras.optimizers.Adadelta(),
 			loss=keras.losses.categorical_crossentropy, 
 			metrics=['accuracy']) 
 
-model.fit(x_train, y_train, epochs=12, batch_size=500) 
+#model.fit(x_train, y_train, epochs=12, batch_size=500) 
+model.fit(x_train, y_train, epochs=10, batch_size=100) 
 
 
-# In[86]:
+# In[7]:
 
 
 score = model.evaluate(x_test, y_test, verbose=0) 
@@ -83,42 +84,27 @@ print('loss=', score[0])
 print('accuracy=', score[1]) 
 
 
-# image = cv2.imread("twow.png")
-# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# gray = cv2.resize(255-gray,(28,28))
-# 
-# blur = cv2.GaussianBlur(gray,(5,5),0)
-# ret, thresh1 = cv2.threshold(blur, 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU) 
-# 
-# cv2.imwrite("testing.png", thresh1)
-# 
-# data = asarray(thresh1)
-# data=data/255.0
-# data = data.reshape(1, 28, 28, 1)
-# predictions = model.predict((data))
-
-# In[100]:
+# In[8]:
 
 
-#Without thresholding or gaussian blurring
-image = cv2.imread("ninew.png")
+image = cv2.imread("6w.png")
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.resize(255-gray,(28,28))
 
-cv2.imwrite("testing.png", gray)
+blur = cv2.GaussianBlur(gray,(5,5),0)
+ret, thresh1 = cv2.threshold(blur, 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU) 
 
-data = asarray(gray)
+cv2.imwrite("testing.png", thresh1)
+
+data = asarray(thresh1)
 data=data/255.0
 data = data.reshape(1, 28, 28, 1)
-predictions = model.predict(data)
+predictions = model.predict((data))
 
 
-# In[101]:
+# In[9]:
 
 
-images=data
-labels=2
-test_predictions=predictions
 print(np.argmax(predictions))
 #plot_confidence(images,labels,test_predictions[0])
 
